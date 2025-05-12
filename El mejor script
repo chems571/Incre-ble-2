@@ -1,0 +1,48 @@
+-- ID de la risa (puedes cambiarlo por el que más te guste)
+local sonidoGojo = "rbxassetid://6842473007"  -- Risa malévola (puedes cambiarla)
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Accede al personaje del jugador
+local personaje = game.Players.LocalPlayer.Character
+local humanoide = personaje:WaitForChild("Humanoid")
+local humanoidRootPart = personaje:WaitForChild("HumanoidRootPart")
+
+-- Reproducir la risa de Gojo
+local risa = Instance.new("Sound")
+risa.SoundId = sonidoGojo
+risa.Parent = personaje.Head
+risa:Play()
+
+-- Animación fluida para elevar al personaje de manera lenta
+local function elevarPersonaje()
+    -- Detener el movimiento del personaje mientras se eleva
+    humanoide.WalkSpeed = 0
+    humanoide.JumpHeight = 0  -- Evitar que el personaje salte
+
+    -- Ajustamos la postura para que el personaje esté "acostado"
+    humanoide:MoveTo(humanoidRootPart.Position)  -- Establecemos la posición inicial
+    
+    -- Configuramos los parámetros de la elevación
+    local alturaObjetivo = 100  -- La altura máxima (puedes ajustarla)
+    local destino = humanoidRootPart.Position + Vector3.new(0, alturaObjetivo, 0)  -- Aumentamos solo la altura
+
+    -- Usamos TweenService para animar la elevación sin aceleración
+    local tweenService = game:GetService("TweenService")
+    local tweenInfo = TweenInfo.new(10, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false, 0)  -- Movimiento suave (10 segundos)
+    local goal = {CFrame = CFrame.new(destino)}  -- Define la posición objetivo para el movimiento
+
+    -- Realizamos el tween
+    local tween = tweenService:Create(humanoidRootPart, tweenInfo, goal)
+    tween:Play()
+    
+    -- Espera a que el movimiento se complete
+    tween.Completed:Wait()
+
+    -- Después de alcanzar la altura, reiniciar el personaje
+    wait(0.5)  -- Un pequeño retraso antes de reiniciar
+    game.Players.LocalPlayer:LoadCharacter()  -- Esto reinicia al personaje
+end
+
+-- Llamar a la función para elevar al personaje
+elevarPersonaje()
